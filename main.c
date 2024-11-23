@@ -12,8 +12,9 @@ struct file_t {
 
 int isDir(char *file){
     struct stat path_stat;
-    return !stat(file, &path_stat) && S_ISREG(path_stat.st_mode);
+    return !stat(file, &path_stat) && S_ISDIR(path_stat.st_mode);
 }
+
 
 char *getExtension(char *filename){
     char *loc;
@@ -39,7 +40,8 @@ int sortByType(char *filepath){
             strcat(path, filepath);
             strcat(path, "/");
             strcat(path, ent->d_name);
-            if (isDir(path)){
+            if (isDir(path)|| strcmp(path, "./..") == 0 || strcmp(path, "./.") == 0) {
+                path[0] = '\0';
                 continue;
             }
             printf("%s\n", path);
