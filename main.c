@@ -16,6 +16,27 @@ int isDir(char *file){
 }
 
 
+int existsCheck(char *filePath, char *dirName){
+    DIR *d;
+    struct dirent *ent;
+    struct stat info;
+    if ((d = opendir(filePath)) == NULL){
+        perror("opendir() error occurred.");
+    } else {
+        while ((ent = readdir(d)) != NULL){
+            if (strcmp(ent->d_name, dirName) == 0){
+                closedir(d);
+                return  1;
+            }
+        }
+
+    }
+    closedir(d);
+
+    return  0;
+}
+
+
 char *getExtension(char *filename){
     char *loc;
     int _ch = '.';
@@ -31,26 +52,65 @@ int sortByType(char *filepath){
     DIR *d;
     struct dirent *ent;
     struct stat info;
-    char path[1025];
+    char path[1025] = "";
+    char currExt[128] = "";
+    char newPath[1025] = "";
+
 
     if ((d = opendir(filepath)) == NULL){
         perror("opendir() error occurred.");
+        return 1;
     } else {
         while ((ent = readdir(d)) != NULL) {
             strcat(path, filepath);
             strcat(path, "/");
             strcat(path, ent->d_name);
-            if (isDir(path)|| strcmp(path, "./..") == 0 || strcmp(path, "./.") == 0) {
+            strcat(newPath, filepath);
+            strcat(newPath, "/");
+            strcat(newPath, currExt);
+            if (isDir(path)|| strcmp(ent->d_name, "..") == 0 || strcmp(ent->d_name, ".") == 0) {
+                currExt[0] = '\0';
                 path[0] = '\0';
+                newPath[0] = '\0';
                 continue;
             }
-            printf("%s\n", path);
-            // Reset the char array.
-            path[0] = '\0';
+            char *ext = getExtension(ent->d_name);
+            if (ext == NULL) {
+                currExt[0] = '\0';
+                path[0] = '\0';
+                newPath[0] = '\0';
+                continue;
+            }
+            strcat(newPath, ext);
+            if (existsCheck(filepath, currExt)){
+                strcat(newPath, "/");
+                strcat(newPath, ent->d_name);
+                rename(path, newPath);
+            } else {
+                if (mkdir(newPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 1){
+                    currExt[0] = '\0';
+                    path[0] = '\0';
+                    newPath[0] = '\0';
+                    perror("error creating dir");
+                    continue;
+                } else {
+                    strcat(newPath, "/");
+                    strcat(newPath, ent->d_name);
+                    rename(path, newPath);
+                }
 
+            }
+            printf("\npath: %s\n, currext: %s\n newpath: %s\n", path, currExt, newPath);
+            // Reset the arrays.
+            currExt[0] = '\0';
+            path[0] = '\0';
+            newPath[0] = '\0';
 
         }
+
     }
+    closedir(d);
+    return 0;
 }
 
 
