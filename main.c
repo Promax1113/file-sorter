@@ -68,7 +68,7 @@ int sortByType(char *filepath){
             strcat(newPath, filepath);
             strcat(newPath, "/");
             strcat(newPath, currExt);
-            if (isDir(path)|| strcmp(ent->d_name, "..") == 0 || strcmp(ent->d_name, ".") == 0) {
+            if (isDir(path)|| strcmp(ent->d_name, "..") == 0 || strcmp(ent->d_name, ".") == 0 || ent->d_name[0] == '.') {
                 currExt[0] = '\0';
                 path[0] = '\0';
                 newPath[0] = '\0';
@@ -100,7 +100,8 @@ int sortByType(char *filepath){
                 }
 
             }
-            printf("\npath: %s\n, currext: %s\n newpath: %s\n", path, currExt, newPath);
+            // Unnecessary "debug" print line.
+            //printf("\npath: %s\n, currext: %s\n newpath: %s\n", path, currExt, newPath);
             // Reset the arrays.
             currExt[0] = '\0';
             path[0] = '\0';
