@@ -82,22 +82,15 @@ int sortByType(char *filepath){
                 continue;
             }
             strcat(newPath, ext);
-            if (existsCheck(filepath, currExt)){
+            if (mkdir(newPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 1){
                 strcat(newPath, "/");
                 strcat(newPath, ent->d_name);
                 rename(path, newPath);
             } else {
-                if (mkdir(newPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 1){
-                    currExt[0] = '\0';
-                    path[0] = '\0';
-                    newPath[0] = '\0';
-                    perror("error creating dir");
-                    continue;
-                } else {
-                    strcat(newPath, "/");
-                    strcat(newPath, ent->d_name);
-                    rename(path, newPath);
-                }
+                strcat(newPath, "/");
+                strcat(newPath, ent->d_name);
+                rename(path, newPath);
+
 
             }
             // Unnecessary "debug" print line.
