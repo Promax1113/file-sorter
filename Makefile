@@ -2,4 +2,4 @@ main: main.c
 	gcc main.c -o a
 
 clean:
-	rm -rf a
+	ls | grep -v "\." | grep -v Makefile | xargs rm
