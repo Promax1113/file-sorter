@@ -5,36 +5,11 @@
 #include <sys/types.h>
 
 
-struct file_t {
-    struct dirent file_o;
-    char ext[128];
-};
-
 int isDir(char *file){
     struct stat path_stat;
     return !stat(file, &path_stat) && S_ISDIR(path_stat.st_mode);
 }
 
-
-int existsCheck(char *filePath, char *dirName){
-    DIR *d;
-    struct dirent *ent;
-    struct stat info;
-    if ((d = opendir(filePath)) == NULL){
-        perror("opendir() error occurred.");
-    } else {
-        while ((ent = readdir(d)) != NULL){
-            if (strcmp(ent->d_name, dirName) == 0){
-                closedir(d);
-                return  1;
-            }
-        }
-
-    }
-    closedir(d);
-
-    return  0;
-}
 
 
 char *getExtension(char *filename){
