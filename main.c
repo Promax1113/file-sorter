@@ -10,8 +10,6 @@ int isDir(char *file){
     return !stat(file, &path_stat) && S_ISDIR(path_stat.st_mode);
 }
 
-
-
 char *getExtension(char *filename){
     char *loc;
     int _ch = '.';
@@ -36,44 +34,37 @@ int sortByType(char *filepath){
         return 1;
     } else {
         while ((ent = readdir(d)) != NULL) {
-            strcat(path, filepath);
-            strcat(path, "/");
-            strcat(path, ent->d_name);
-            strcat(newPath, filepath);
-            strcat(newPath, "/");
-            strcat(newPath, currExt);
+            // path is ./filename
+            snprintf(path, sizeof(path), "%s/%s", filepath, ent->d_name);
+            snprintf(newPath, sizeof(newPath), "%s/%s", filepath, currExt);
             if (isDir(path)|| strcmp(ent->d_name, "..") == 0 || strcmp(ent->d_name, ".") == 0 || ent->d_name[0] == '.') {
-                currExt[0] = '\0';
-                path[0] = '\0';
-                newPath[0] = '\0';
+                memset(path, 0, sizeof(path));
+                memset(newPath, 0, sizeof(newPath));
+                memset(currExt, 0, sizeof(currExt));
                 continue;
             }
             char *ext = getExtension(ent->d_name);
             if (ext == NULL) {
-                currExt[0] = '\0';
-                path[0] = '\0';
-                newPath[0] = '\0';
+                memset(path, 0, sizeof(path));
+                memset(newPath, 0, sizeof(newPath));
+                memset(currExt, 0, sizeof(currExt));
                 continue;
             }
+            // new path gets set to ./extension
             strcat(newPath, ext);
             if (mkdir(newPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 1){
-                strcat(newPath, "/");
-                strcat(newPath, ent->d_name);
+
+                snprintf(newPath, sizeof(newPath), "%s/%s", newPath, ent->d_name);
                 rename(path, newPath);
             } else {
-                strcat(newPath, "/");
-                strcat(newPath, ent->d_name);
+                snprintf(newPath, sizeof(newPath), "%s/%s", newPath, ent->d_name);
                 rename(path, newPath);
 
-
             }
-            // Reset the arrays.
-            currExt[0] = '\0';
-            path[0] = '\0';
-            newPath[0] = '\0';
-
+            memset(path, 0, sizeof(path));
+            memset(newPath, 0, sizeof(newPath));
+            memset(currExt, 0, sizeof(currExt));
         }
-
     }
     closedir(d);
     return 0;
@@ -92,6 +83,4 @@ int main(int argc, char **argv){
         return 0;
     }
     sortByType(filepath);
-
 }
-
