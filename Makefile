@@ -1,5 +1,17 @@
-main: main.c
-	gcc main.c -o a
+# Makefile
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c11
+TARGET = main
+SRC = main.c
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
 
 clean:
-	ls | grep -v "\." | grep -v Makefile | xargs rm
+	rm -f $(TARGET)
+	rm -rf $(TARGET).dSYM

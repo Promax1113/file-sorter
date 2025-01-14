@@ -26,7 +26,6 @@ char *getExtension(char *filename){
 int sortByType(char *filepath){
     DIR *d;
     struct dirent *ent;
-    struct stat info;
     char path[1025] = "";
     char currExt[128] = "";
     char newPath[1025] = "";
@@ -68,8 +67,6 @@ int sortByType(char *filepath){
 
 
             }
-            // Unnecessary "debug" print line.
-            //printf("\npath: %s\n, currext: %s\n newpath: %s\n", path, currExt, newPath);
             // Reset the arrays.
             currExt[0] = '\0';
             path[0] = '\0';
@@ -90,7 +87,11 @@ int main(int argc, char **argv){
     } else {
         filepath = argv[1];
     }
-
+    if (strcmp(filepath, "--help") == 0 || strcmp(filepath, "-h") == 0){
+        printf("Usage: %s [directory] (defaults to current)\n", argv[0]);
+        return 0;
+    }
     sortByType(filepath);
 
 }
+
